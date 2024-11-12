@@ -1,0 +1,66 @@
+import java.util.Scanner;
+
+class Knapsack01 {
+
+    // Function to solve 0/1 Knapsack problem using Dynamic Programming
+    static int knapsack(int[] values, int[] weights, int n, int capacity) {
+        int[][] dp = new int[n + 1][capacity + 1];
+
+        // Build the DP table in bottom-up manner
+        for (int i = 0; i <= n; i++) {
+            for (int w = 0; w <= capacity; w++) {
+                if (i == 0 || w == 0) {
+                    dp[i][w] = 0; // Base case: No items or zero capacity
+                } else if (weights[i - 1] <= w) {
+                    dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1]);
+                } else {
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+
+        // To print which items are included in the knapsack
+        printSelectedItems(dp, weights, values, n, capacity);
+
+        // The last cell contains the maximum value we can achieve
+        return dp[n][capacity];
+    }
+
+    // Function to print the items included in the knapsack
+    static void printSelectedItems(int[][] dp, int[] weights, int[] values, int n, int capacity) {
+        System.out.println("\nItems included in the knapsack:");
+        int w = capacity;
+        for (int i = n; i > 0 && w > 0; i--) {
+            if (dp[i][w] != dp[i - 1][w]) {
+                System.out.printf("Item %d (Value = %d, Weight = %d)\n", i, values[i - 1], weights[i - 1]);
+                w -= weights[i - 1];
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter number of items: ");
+        int n = sc.nextInt();
+
+        int[] values = new int[n];
+        int[] weights = new int[n];
+
+        // Input values and weights
+        System.out.println("Enter value and weight of each item:");
+        for (int i = 0; i < n; i++) {
+            System.out.print("Item " + (i + 1) + ": ");
+            values[i] = sc.nextInt();
+            weights[i] = sc.nextInt();
+        }
+
+        System.out.print("Enter knapsack capacity: ");
+        int capacity = sc.nextInt();
+
+        // Calculate the maximum value that fits into the knapsack
+        int maxValue = knapsack(values, weights, n, capacity);
+        System.out.println("\nMaximum value in the knapsack: " + maxValue);
+
+        sc.close();
+    }
+}
