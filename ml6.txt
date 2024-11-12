@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans 
+import matplotlib.pyplot as plt 
+from sklearn.preprocessing import StandardScaler
+
+data=pd.read_csv(r'C:\Users\Mahajan\Desktop\All Codes\ML\sales_data_sample.csv',encoding='latin1')
+
+# Step 3: Select relevant numeric features for clustering
+# Using sales-related columns for clustering 
+features = ['QUANTITYORDERED', 'PRICEEACH', 'SALES', 'MSRP']
+
+# Step 4: Preprocess the data by selecting relevant features
+# Dropping rows with missing values for simplicity
+X = data[features].dropna()
+
+# Step 5: Normalize the data (Optional but recommended for K-Means)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Step 6: Apply K-Means for a range of K values and compute WCSS
+WCSS = []
+K_range = range(1, 11) 
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, random_state=42)   
+    kmeans.fit(X_scaled)
+    WCSS.append(kmeans.inertia_)  # Inertia is the WCSS value
+
+
+plt.figure(figsize=(8,6))
+plt.plot(K_range, WCSS, 'bo-', marker='o')
+plt.title('Elbow Method for Optimal K')
+plt.xlabel('Number of clusters (K)')
+plt.ylabel('Within-Cluster Sum of Squares (WCSS)')
+plt.xticks(K_range)
+plt.grid(True)
+plt.show()
